@@ -1,24 +1,45 @@
 import mongoose from "mongoose";
+import * as bcrypt from 'bcrypt';
 
 const UserSchema = mongoose.Schema(
     {
-        "Username": {
+        "username": {
             type: String,
-            require: true,
-            uniq: true,
+            required: true,
+            unique: true,
+            index: true,
         },
         "email": {
             type: String,
-            require: true,
-            uniq: true,
+            required: true,
+            unique: true,
+        },
+        "password": {
+            type: String,
+            required: [true, "please enter password"],
         },
         "fullname": {
             type: String,
-            require: true,
+            requiredd: true,
         },
         "phone": {
             type: Number,
-            require: true,
+            required: true,
         },
+        "avatar": {
+            type: String,
+        }
     },
-    { timestamp: true });
+    { timestamp: true }
+);
+
+UserSchema.pre("save", async function (error, req, res, next) {
+    if (!this.isModified("password")) {
+        return next;
+    }
+    this.password = bcrypt.hashSync(this.password, 10);
+
+    next;
+});
+
+export const User = mongoose.model("User", UserSchema);
