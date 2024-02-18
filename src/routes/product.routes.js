@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchproduct } from "../controller/product.controller.js";
+import { fetchbrandname, fetchproduct } from "../controller/product.controller.js";
 
 
 const routes = Router();
@@ -7,5 +7,8 @@ const routes = Router();
 routes.route("/fetchproduct").get(
     fetchproduct
 );
+routes.route("/fetchbrandnames").get(
+    fetchbrandname
+)
 
 export default routes;
