@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import * as bcrypt from 'bcrypt';
 
 const ProductSchema = mongoose.Schema(
     {
@@ -16,14 +15,23 @@ const ProductSchema = mongoose.Schema(
             type: Number,
             required: true,
         },
+        "count": {
+            type: Number,
+            required: true,
+        },
         "brand": {
             type: mongoose.Types.ObjectId,
             ref: "Brand"
         },
-        "image": {
+        "coverimage": {
             type: String,
             required: true,
-        }
+        },
+        "productimage": [
+            {
+                type: String,
+            }
+        ],
     },
     { timestamp: true }
 );
