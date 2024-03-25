@@ -5,19 +5,37 @@ import { ApiError } from "../utils/ApiError.utils.js";
 import { Brand } from "../models/brandname.models.js";
 import fs, { createReadStream } from "fs";
 import mongoose, { Mongoose } from "mongoose";
+import { Wishlist } from "../models/wishlist.models.js";
 
 
 
 const fetchproduct = AsyncHandler(async (req, res) => {
-    const { id } = req.query;
-    console.log(new mongoose.Types.ObjectId(id));
-
+    const { id, user } = req.query;
+    // console.log(user);
     const product = await Product
         .aggregate([
             {
                 $match: {
                     _id: new mongoose.Types.ObjectId(id)
                 }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "sneakerhead",
+                    foreignField: "_id",
+                    as: "sneakerhead",
+                    pipeline: [
+                        {
+                            $project: {
+                                username: 1,
+                            }
+                        },
+                    ]
+                },
+            },
+            {
+                $unwind: "$sneakerhead"
             },
             {
                 $lookup: {
@@ -36,9 +54,16 @@ const fetchproduct = AsyncHandler(async (req, res) => {
 
             },
             {
-                $addFields: {
-                    shoesbrand: "$brand_name",
-                }
+                $unwind: "$brand_name"
+            },
+            {
+                $lookup: {
+                    from: "wishlists",
+                    localField: "_id",
+                    foreignField: "product",
+                    as: "result",
+                },
+
             },
             {
                 $project: {
@@ -51,6 +76,10 @@ const fetchproduct = AsyncHandler(async (req, res) => {
                     count: 1,
                     type: 1,
                     gender: 1,
+                    sneakerhead: 1,
+                    "fav": {
+                        $in: [new mongoose.Types.ObjectId(user), "$result.user"]
+                    }
                 }
             }
         ]);
@@ -98,7 +127,7 @@ const fetchproducts = AsyncHandler(async (req, res) => {
             },
             {
                 $sort: {
-                    field1: 1
+                    _id: 1
                 }
             },
             {
@@ -116,7 +145,7 @@ const fetchproducts = AsyncHandler(async (req, res) => {
                 }
             }
         ]);
-        console.log(products);
+        // console.log(products);
         return res.status(200).json(
             new ApiResponse(
                 200,
