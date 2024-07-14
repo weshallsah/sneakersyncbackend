@@ -25,6 +25,7 @@ const uploadCloud = async (localfile) => {
     } catch (error) {
         fs.unlinkSync(localfile);
         console.log('error occure', error);
+        new ApiError(error);
         return null;
     }
 };

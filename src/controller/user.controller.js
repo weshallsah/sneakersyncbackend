@@ -55,9 +55,13 @@ const login = AsyncHandler(async (req, res) => {
         console.log(username);
         const user = await User.findOne(
             {
-                username
+                $or: [
+                    { username },
+                    { email: username }
+                ]
             }
         );
+        console.log(user);
         if (!user) {
             throw new ApiError(404, "user does not exits");
         }
@@ -66,11 +70,14 @@ const login = AsyncHandler(async (req, res) => {
             throw new ApiError(402, "wrong password");
         }
         const credential = await User.findById(user._id).select('-password');
+        console.log(credential);
         return res.status(200).json(
             new ApiResponse(200, credential, "login successfull")
         );
     } catch (error) {
-        throw new ApiError(505, error, error);
+        return res.status(error.statuscode).json(
+            new ApiResponse(error.statuscode, error.message, error.message)
+        );
     }
 });
 

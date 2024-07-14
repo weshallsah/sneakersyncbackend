@@ -3,10 +3,7 @@ import { Product } from "../models/product.models.js";
 import { ApiResponse } from "../utils/ApiResponse.utils.js";
 import { ApiError } from "../utils/ApiError.utils.js";
 import { Brand } from "../models/brandname.models.js";
-import fs, { createReadStream } from "fs";
 import mongoose, { Mongoose } from "mongoose";
-import { Wishlist } from "../models/wishlist.models.js";
-
 
 
 const fetchproduct = AsyncHandler(async (req, res) => {
@@ -83,6 +80,7 @@ const fetchproduct = AsyncHandler(async (req, res) => {
                 }
             }
         ]);
+    // console.log(product);
     return res.status(200).json(
         new ApiResponse(200, product, "ok")
     )
