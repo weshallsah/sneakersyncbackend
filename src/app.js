@@ -19,7 +19,7 @@ import path from "path";
 
 
 app.get("/", async (req, res) => {
-    
+    res.sendFile(path.resolve("public/web/index.html"));
 });
 app.get("/api/v1/", (req, res) => {
     return res.status(200).json({
